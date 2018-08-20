@@ -1,0 +1,89 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="10dp"
+    app:cardCornerRadius="10dp"
+    app:cardBackgroundColor="@color/cardview_light_background"
+    app:cardElevation="4dp"
+    android:padding="10dp"
+    android:layout_marginBottom="12dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/ingr_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/acme"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:text="@string/ingredients_name"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/ing_quantity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/acme"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:text="@string/quantity"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/ing_quantity2"
+            app:layout_constraintTop_toBottomOf="@+id/ingr_name" />
+
+        <TextView
+            android:id="@+id/ing_quantity2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/acme"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:text="@string/quantity"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ingr_name" />
+
+        <TextView
+            android:id="@+id/ingr_measure"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/acme"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:text="@string/measure"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/ing_quantity"
+            app:layout_constraintTop_toBottomOf="@+id/ing_quantity" />
+
+        <TextView
+            android:id="@+id/ingr_measure2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/acme"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:text="@string/measure"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ing_quantity" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>
