@@ -52,11 +52,5 @@ public class RecipeWidget extends AppWidgetProvider {
         }
     }
 
-    public static void updateAll (Context context, AppWidgetManager appWidgetManager, int [] appWidgetIds, Cake cake){
-        for(int appWidgetId : appWidgetIds){
-            updateAppWidget(context, appWidgetManager, appWidgetId, cake);
-        }
-    }
-
 }
 
