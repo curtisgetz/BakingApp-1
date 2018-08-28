@@ -45,8 +45,8 @@ public class StepsFragment extends Fragment {
 
         final StepListAdapter.MyClickListener listener = new StepListAdapter.MyClickListener() {
             @Override
-            public void onStepSelected(String videoURL) {
-                onClickStepListener.onStepSelected(videoURL);
+            public void onStepSelected(String videoURL, String description) {
+                onClickStepListener.onStepSelected(videoURL, description );
             }
         };
 
@@ -54,6 +54,7 @@ public class StepsFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rv_step.setLayoutManager(layoutManager);
         rv_step.setAdapter(stepListAdapter);
+        RecipeWidgetService.startActionRecipeUpdate(getActivity(), cake);
         return view;
     }
 
@@ -61,7 +62,7 @@ public class StepsFragment extends Fragment {
     Interface to be implemented
      */
     public interface OnClickStepListener{
-         void onStepSelected(String videoURL);
+         void onStepSelected(String videoURL, String description);
     }
 
     @Override

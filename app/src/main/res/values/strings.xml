@@ -11,4 +11,6 @@
     <string name="short_description">Short description</string>
     <string name="description">description</string>
     <string name="steps">Click the steps for more info</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>

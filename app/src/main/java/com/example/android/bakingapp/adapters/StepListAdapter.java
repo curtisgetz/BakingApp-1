@@ -57,7 +57,7 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
      Interface to be implemented
       */
     public interface MyClickListener {
-        void onStepSelected(String videoURL);
+        void onStepSelected(String videoURL, String description);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -75,7 +75,7 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
             final Step step = steps.get(getAdapterPosition());
 
             if ( myClickListener != null ) {
-                myClickListener.onStepSelected(step.getVideoURL());
+                myClickListener.onStepSelected(step.getVideoURL(), step.getDescription());
             } else {
                 Toast.makeText(context, "null", Toast.LENGTH_SHORT).show();
             }

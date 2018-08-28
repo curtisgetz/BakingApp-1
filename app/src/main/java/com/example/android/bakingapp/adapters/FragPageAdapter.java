@@ -16,9 +16,10 @@ public class FragPageAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0: // Fragment # 0 - This will show FirstFragment
-                return new IngredientFragment();
-            case 1: // Fragment # 0 - This will show FirstFragment different title
                 return new StepsFragment();
+            case 1: // Fragment # 0 - This will show FirstFragment different title
+               return new IngredientFragment();
+
             default:
                 return null;
         }
@@ -32,9 +33,9 @@ public class FragPageAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position){
             case 0:
-                return "Ingredients";
-            case 1:
                 return "Steps";
+            case 1:
+                return "Ingredients";
             default:
                 return null;
         }

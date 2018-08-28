@@ -42,7 +42,6 @@ public class IngredientFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rv_ing.setLayoutManager(layoutManager);
         rv_ing.setAdapter(ingListAdapter);
-
         return view;
     }
 }

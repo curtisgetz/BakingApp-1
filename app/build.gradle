@@ -33,5 +33,7 @@ dependencies {
 
     compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:design:27.1.1'
+    compile 'com.google.android.exoplayer:exoplayer:r2.2.0'
+
 
 }
