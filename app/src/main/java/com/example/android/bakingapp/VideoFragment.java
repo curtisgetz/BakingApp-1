@@ -76,8 +76,12 @@ public class VideoFragment extends android.support.v4.app.Fragment {
         ButterKnife.bind(this, view);
         context = getActivity().getBaseContext();
 
-        if ( savedInstanceState != null ) {
+        if ( savedInstanceState != null &&  simpleExoPlayer !=null) {
             initializePlayer(Uri.parse(savedInstanceState.getString(VIDEO)));
+            long pos = savedInstanceState.getLong(POSITION);
+            simpleExoPlayer.seekTo(pos);
+            boolean state = savedInstanceState.getBoolean(STATE);
+            simpleExoPlayer.setPlayWhenReady(state);
         } else {
             step = getActivity().getIntent().getExtras().getParcelable("singleStep");
             stepArrayList = getActivity().getIntent().getExtras().getParcelableArrayList("stepsArrayList");
@@ -214,23 +218,44 @@ public class VideoFragment extends android.support.v4.app.Fragment {
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        currentPosition = simpleExoPlayer.getCurrentPosition();
+        state = simpleExoPlayer.getPlayWhenReady();
+        releasePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        releasePlayer();
+    }
+
+    @Override
+    public void onDestroy() {
+        releasePlayer();
+        super.onDestroy();
+
+    }
+
     /*
      * Release ExoPlayer.
      */
     private void releasePlayer() {
         if ( simpleExoPlayer != null ) {
-            currentPosition = simpleExoPlayer.getCurrentPosition();
             simpleExoPlayer.stop();
             simpleExoPlayer.release();
             simpleExoPlayer = null;
         }
-
     }
 
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle currentState) {
         currentState.putString(VIDEO, videoUrl);
+        currentState.putLong(POSITION, currentPosition);
+        currentState.putBoolean(STATE, state);
         super.onSaveInstanceState(currentState);
 
     }
