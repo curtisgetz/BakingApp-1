@@ -8,11 +8,6 @@
     android:orientation="vertical"
     android:padding="@dimen/widget_margin">
 
-    <ImageView
-        android:id="@+id/image_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/novideo"/>
     <TextView
         android:id="@+id/cake_title"
         android:layout_width="wrap_content"

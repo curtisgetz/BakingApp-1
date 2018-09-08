@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import butterknife.ButterKnife;
 
 public class VideoActivity extends AppCompatActivity {
-//    @BindView(R.id.text_test)
-//    TextView test;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +18,8 @@ public class VideoActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString("video", getIntent().getStringExtra("video") );
         bundle.putString("description", getIntent().getStringExtra("video") );
+        bundle.putParcelableArrayList("stepsArrayList", getIntent().getParcelableArrayListExtra("stepsArrayList") );
+        bundle.putParcelable("singleStep", getIntent().getParcelableExtra("singleStep") );
         videoFragment.setArguments(bundle);
     }
 }

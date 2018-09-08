@@ -43,10 +43,24 @@ public class StepsFragment extends Fragment {
         steps = cake.getSteps();
 
 
+//        final StepListAdapter.MyClickListener listener = new StepListAdapter.MyClickListener() {
+//            @Override
+//            public void onStepSelected(String videoURL, String description) {
+//                onClickStepListener.onStepSelected(videoURL, description );
+//            }
+//        };
+
+//        final StepListAdapter.MyClickListener listener = new StepListAdapter.MyClickListener() {
+//            @Override
+//            public void onStepSelected(ArrayList <Step> steps) {
+//                  onClickStepListener.onStepSelected(steps);
+//            }
+//        };
+
         final StepListAdapter.MyClickListener listener = new StepListAdapter.MyClickListener() {
             @Override
-            public void onStepSelected(String videoURL, String description) {
-                onClickStepListener.onStepSelected(videoURL, description );
+            public void onStepSelected(ArrayList<Step> steps, Step single_step) {
+                onClickStepListener.onStepSelected(steps, single_step);
             }
         };
 
@@ -62,7 +76,7 @@ public class StepsFragment extends Fragment {
     Interface to be implemented
      */
     public interface OnClickStepListener{
-         void onStepSelected(String videoURL, String description);
+         void onStepSelected(ArrayList <Step> steps, Step single_step);
     }
 
     @Override
@@ -76,5 +90,4 @@ public class StepsFragment extends Fragment {
              throw new ClassCastException(context.toString() + "needs to implement OnClickStepListener");
          }
     }
-
 }

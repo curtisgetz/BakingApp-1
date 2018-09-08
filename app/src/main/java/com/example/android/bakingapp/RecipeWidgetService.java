@@ -40,11 +40,9 @@ public class RecipeWidgetService extends IntentService {
         }
     }
 
-
     private void handleActionRecipeUpdate(Cake cake){
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance((this));
-        // for some reason, int[] appWidgetIds always returns 0
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidgetService.class));
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidget.class));
         RecipeWidget.updateBakingWidgets(this, appWidgetManager, appWidgetIds, cake);
     }
 }

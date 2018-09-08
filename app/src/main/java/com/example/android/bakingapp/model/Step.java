@@ -72,4 +72,15 @@ public class Step implements Parcelable{
         parcel.writeString(videoURL);
         parcel.writeString(thumbnailURL);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Step step = (Step) obj;
+
+        return description.equals(step.description);
+    }
 }

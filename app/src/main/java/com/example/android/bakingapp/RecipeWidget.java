@@ -27,6 +27,8 @@ public class RecipeWidget extends AppWidgetProvider {
                             String.valueOf(ingredient.getMeasure()) + " " + ingredient.getIngredient());
             views.addView(R.id.single_ingredients_layout, view);
         }
+        // Instruct the widget manager to update the widget
+        appWidgetManager.updateAppWidget(appWidgetId, views);
 
     }
 
