@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,18 +36,15 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     private static final String STATE = "STATE";
     private static final String VIDEO = "VIDEO";
     private static final String POSITION = "POS";
-
-    private static final String STEP = "STEP";
-    private static final String STEPS = "STEPS";
-
+    private static final String DESCR = "DESCR";
 
     public long currentPosition = C.TIME_UNSET;
     @BindView(R.id.description)
     TextView description_text_view;
     @BindView(R.id.next_button)
-    ImageView next_button;
+    TextView next_button;
     @BindView(R.id.prev_button)
-    ImageView prev_button;
+    TextView prev_button;
     @BindView(R.id.playerView)
     SimpleExoPlayerView simpleExoPlayerView;
     SimpleExoPlayer simpleExoPlayer;
@@ -62,8 +58,10 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     private long position;
     private boolean state = true;
     private String videoUrl;
+    private String desc;
     long video_pos;
     String video_to_be_resumed;
+    Bundle x;
 
     public VideoFragment() {
     }
@@ -76,19 +74,21 @@ public class VideoFragment extends android.support.v4.app.Fragment {
         ButterKnife.bind(this, view);
         context = getActivity().getBaseContext();
 
-        if ( savedInstanceState != null &&  simpleExoPlayer !=null) {
-            initializePlayer(Uri.parse(savedInstanceState.getString(VIDEO)));
-            long pos = savedInstanceState.getLong(POSITION);
-            simpleExoPlayer.seekTo(pos);
-            boolean state = savedInstanceState.getBoolean(STATE);
-            simpleExoPlayer.setPlayWhenReady(state);
-        } else {
-            step = getActivity().getIntent().getExtras().getParcelable("singleStep");
-            stepArrayList = getActivity().getIntent().getExtras().getParcelableArrayList("stepsArrayList");
-            pos = stepArrayList.indexOf(step);
-            videoUrl = step.getVideoURL();
-        }
+        step = getActivity().getIntent().getExtras().getParcelable("singleStep");
+        stepArrayList = getActivity().getIntent().getExtras().getParcelableArrayList("stepsArrayList");
+        videoUrl = step.getVideoURL();
+        pos = stepArrayList.indexOf(step);
 
+
+        if ( savedInstanceState != null) {
+            String v = savedInstanceState.getString(VIDEO);
+            if (v != null) { initializePlayer(Uri.parse(v));}
+            Long pos = savedInstanceState.getLong(POSITION);
+            boolean state = savedInstanceState.getBoolean(STATE);
+            if (simpleExoPlayer!= null) {
+                simpleExoPlayer.seekTo(pos);
+                simpleExoPlayer.setPlayWhenReady(state);}
+        }
 
         simpleExoPlayerView.setVisibility(View.VISIBLE);
         if ( step != null ) {
@@ -96,6 +96,7 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                 simpleExoPlayerView.setVisibility(View.GONE);
                 releasePlayer();
             }
+
             video_to_be_saved = step.getVideoURL();
             initializePlayer(Uri.parse(step.getVideoURL()));
             description_text_view.setText(step.getDescription());
@@ -135,6 +136,7 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                         simpleExoPlayerView.setVisibility(View.VISIBLE);
                         initializePlayer(video_uri);
                     }
+                    simpleExoPlayer = null;
 
                 }
             });
@@ -221,22 +223,30 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        currentPosition = simpleExoPlayer.getCurrentPosition();
-        state = simpleExoPlayer.getPlayWhenReady();
-        releasePlayer();
+        if (simpleExoPlayer != null) {
+            currentPosition = simpleExoPlayer.getCurrentPosition();
+            state = simpleExoPlayer.getPlayWhenReady();
+            desc = step.getDescription();
+            simpleExoPlayer.stop();
+            simpleExoPlayer.release();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        releasePlayer();
+        if (simpleExoPlayer != null) {
+            simpleExoPlayer.stop();
+            simpleExoPlayer.release();
+        }
     }
 
-    @Override
-    public void onDestroy() {
-        releasePlayer();
-        super.onDestroy();
 
+
+    @Override
+    public void onDestroyView() {
+        releasePlayer();
+        super.onDestroyView();
     }
 
     /*
@@ -246,17 +256,18 @@ public class VideoFragment extends android.support.v4.app.Fragment {
         if ( simpleExoPlayer != null ) {
             simpleExoPlayer.stop();
             simpleExoPlayer.release();
-            simpleExoPlayer = null;
         }
     }
 
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle currentState) {
-        currentState.putString(VIDEO, videoUrl);
-        currentState.putLong(POSITION, currentPosition);
-        currentState.putBoolean(STATE, state);
+        if (step != null && !step.getVideoURL().isEmpty()) {
+            currentState.putString(VIDEO, videoUrl);
+            currentState.putLong(POSITION, currentPosition);
+            currentState.putBoolean(STATE, state);}
         super.onSaveInstanceState(currentState);
+
 
     }
 

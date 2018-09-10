@@ -34,20 +34,28 @@
                 android:layout_height="match_parent">
 
 
-                <ImageView
+                <TextView
                     android:id="@+id/prev_button"
-                    android:src="@color/colorPrimaryDark"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="Prev"
+                    android:gravity="center"
+                    android:textSize="40sp"
                     android:layout_margin="10dp"
                     android:layout_width="100dp"
                     android:layout_height="100dp" />
 
-                <ImageView
+
+
+                <TextView
                     android:id="@+id/next_button"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_margin="10dp"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="Next"
                     android:layout_alignParentEnd="true"
-                    android:src="@color/colorPrimaryDark" />
+                    android:gravity="center"
+                    android:textSize="40sp"
+                    android:layout_margin="10dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp" />
 
             </RelativeLayout>
 
