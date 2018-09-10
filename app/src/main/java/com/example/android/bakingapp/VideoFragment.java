@@ -168,6 +168,8 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                         simpleExoPlayerView.setVisibility(View.VISIBLE);
                         initializePlayer(video_uri);
                     }
+                    simpleExoPlayer = null;
+
                 }
             });
         }
