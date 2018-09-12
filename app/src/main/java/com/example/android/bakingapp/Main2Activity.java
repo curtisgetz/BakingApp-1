@@ -42,15 +42,15 @@ public class Main2Activity extends AppCompatActivity implements StepsFragment.On
     }
 
     @Override
-    public void onStepSelected(ArrayList<Step> steps, Step single_step) {
+    public void onStepSelected(ArrayList<Step> steps, Step single_step, String videoURL, String description) {
         if ( findViewById(R.id.all_item_holder) != null ) {
-//            viewPager = null;
-//            twoPane = true;
-//            //Toast.makeText(this, videoURL + "from activity", Toast.LENGTH_SHORT).show();
-//            VideoFragment videoFragment = new VideoFragment();
-//            videoFragment.setVideoURL(step.getVideoURL());
-//            videoFragment.setDescription(step.getDescription());
-//            getSupportFragmentManager().beginTransaction().replace(R.id.container, videoFragment).commit();
+            viewPager = null;
+            twoPane = true;
+            VideoFragment videoFragment = new VideoFragment();
+            videoFragment.setVideoURL(videoURL);
+            videoFragment.setDescription(description);
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, videoFragment).commit();
+
         } else {
             twoPane = false;
             Intent intent = new Intent(this, VideoActivity.class);
@@ -63,5 +63,4 @@ public class Main2Activity extends AppCompatActivity implements StepsFragment.On
             startActivity(intent);
         }
     }
-
 }

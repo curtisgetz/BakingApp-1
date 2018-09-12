@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +37,7 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     private static final String STATE = "STATE";
     private static final String VIDEO = "VIDEO";
     private static final String POSITION = "POS";
-    private static final String DESCR = "DESCR";
+    private static final String STEP = "STEP";
 
     public long currentPosition = C.TIME_UNSET;
     @BindView(R.id.description)
@@ -49,7 +50,7 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     SimpleExoPlayerView simpleExoPlayerView;
     SimpleExoPlayer simpleExoPlayer;
     Context context;
-    Step step;
+    Step step_org;
     ArrayList<Step> stepArrayList;
     int pos;
     String video_to_be_saved;
@@ -59,9 +60,11 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     private boolean state = true;
     private String videoUrl;
     private String desc;
-    long video_pos;
-    String video_to_be_resumed;
-    Bundle x;
+
+    String video_fn;
+    String dis_fn;
+
+    Step s;
 
     public VideoFragment() {
     }
@@ -72,60 +75,82 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.video_fragment, container, false);
         ButterKnife.bind(this, view);
-        context = getActivity().getBaseContext();
 
-        step = getActivity().getIntent().getExtras().getParcelable("singleStep");
+        context = getContext();
         stepArrayList = getActivity().getIntent().getExtras().getParcelableArrayList("stepsArrayList");
-        videoUrl = step.getVideoURL();
-        pos = stepArrayList.indexOf(step);
+        step_org = getActivity().getIntent().getExtras().getParcelable("singleStep");
 
+        if ( savedInstanceState != null ) {
+            if ( savedInstanceState.getParcelable("v_for_two") != null ) {
+                initializePlayer(Uri.parse(savedInstanceState.getString("v_for_two")));
+            }
 
-        if ( savedInstanceState != null) {
-            String v = savedInstanceState.getString(VIDEO);
-            if (v != null) { initializePlayer(Uri.parse(v));}
+            if ( step_org != null ) {
+                step_org = savedInstanceState.getParcelable(STEP);
+                videoUrl = step_org.getVideoURL();
+                pos = stepArrayList.indexOf(step_org);
+
+                description_text_view.setText(step_org.getDescription());
+                String v = savedInstanceState.getString(VIDEO);
+                if ( v != null ) {
+                    initializePlayer(Uri.parse(v));
+                }
+            }
+
             Long pos = savedInstanceState.getLong(POSITION);
             boolean state = savedInstanceState.getBoolean(STATE);
-            if (simpleExoPlayer!= null) {
-                simpleExoPlayer.seekTo(pos);
-                simpleExoPlayer.setPlayWhenReady(state);}
-        }
 
+            Log.i("TAG", "state and pos: " + state + "   " + pos);
+
+            if ( simpleExoPlayer != null ) {
+                simpleExoPlayer.seekTo(pos);
+                simpleExoPlayer.setPlayWhenReady(state);
+            }
+
+        } else {
+            if ( video_url != null ) {
+                initializePlayer(Uri.parse(video_url));
+            }
+
+            if ( step_description != null ) {
+                description_text_view.setText(step_description);
+            }
+
+            if ( step_org != null ) {
+                videoUrl = step_org.getVideoURL();
+                pos = stepArrayList.indexOf(step_org);
+            } else {
+                //This is two panel so hide the next and prev buttons
+                next_button.setVisibility(View.INVISIBLE);
+                prev_button.setVisibility(View.INVISIBLE);
+            }
+
+        }
         simpleExoPlayerView.setVisibility(View.VISIBLE);
-        if ( step != null ) {
-            if ( step.getVideoURL().isEmpty() ) {
+        if ( step_org != null ) {
+            if ( step_org.getVideoURL().isEmpty() ) {
                 simpleExoPlayerView.setVisibility(View.GONE);
                 releasePlayer();
             }
 
-            video_to_be_saved = step.getVideoURL();
-            initializePlayer(Uri.parse(step.getVideoURL()));
-            description_text_view.setText(step.getDescription());
-
+            initializePlayer(Uri.parse(step_org.getVideoURL()));
+            description_text_view.setText(step_org.getDescription());
 
         }
 
-        if ( video_url != null ) {
-            initializePlayer(Uri.parse(video_url));
-        }
-
-        if ( step_description != null ) {
-            description_text_view.setText(step_description);
-        }
 
         if ( next_button != null ) {
-
             next_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    releasePlayer();
                     if ( pos < stepArrayList.size() - 1 ) {
                         pos++;
                     } else {
                         Toast.makeText(getContext(), "You have reached the final step", Toast.LENGTH_SHORT).show();
                     }
                     Step step = stepArrayList.get(pos);
+                    step_org = step;
                     String video = step.getVideoURL();
-                    video_to_be_saved = video;
                     String dis = step.getDescription();
                     description_text_view.setText(dis);
                     if ( video.isEmpty() ) {
@@ -136,11 +161,10 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                         simpleExoPlayerView.setVisibility(View.VISIBLE);
                         initializePlayer(video_uri);
                     }
+                    releasePlayer();
                     simpleExoPlayer = null;
-
                 }
             });
-
 
         }
 
@@ -183,6 +207,7 @@ public class VideoFragment extends android.support.v4.app.Fragment {
 
     public void setDescription(String description) {
         step_description = description;
+
     }
 
     private int getPos(Step step) {
@@ -203,7 +228,7 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                 // Create an instance of the ExoPlayer.
                 TrackSelector trackSelector = new DefaultTrackSelector();
                 LoadControl loadControl = new DefaultLoadControl();
-                if (getContext() != null ) {
+                if ( getContext() != null ) {
                     simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl);
                     simpleExoPlayerView.setPlayer(simpleExoPlayer);
 
@@ -225,24 +250,23 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (simpleExoPlayer != null) {
+        if ( simpleExoPlayer != null ) {
             currentPosition = simpleExoPlayer.getCurrentPosition();
             state = simpleExoPlayer.getPlayWhenReady();
-            desc = step.getDescription();
             simpleExoPlayer.stop();
             simpleExoPlayer.release();
+            simpleExoPlayer = null;
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (simpleExoPlayer != null) {
+        if ( simpleExoPlayer != null ) {
             simpleExoPlayer.stop();
             simpleExoPlayer.release();
         }
     }
-
 
 
     @Override
@@ -264,10 +288,17 @@ public class VideoFragment extends android.support.v4.app.Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle currentState) {
-        if (step != null && !step.getVideoURL().isEmpty()) {
+        if ( step_org != null ) {
+            currentState.putParcelable(STEP, step_org);
+        }
+        if ( step_org != null && !step_org.getVideoURL().isEmpty() ) {
             currentState.putString(VIDEO, videoUrl);
             currentState.putLong(POSITION, currentPosition);
-            currentState.putBoolean(STATE, state);}
+            currentState.putBoolean(STATE, state);
+        }
+        if ( video_url != null ) {
+            currentState.putString("v_for_two", video_url);
+        }
         super.onSaveInstanceState(currentState);
 
 

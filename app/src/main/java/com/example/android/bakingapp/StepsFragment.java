@@ -59,8 +59,8 @@ public class StepsFragment extends Fragment {
 
         final StepListAdapter.MyClickListener listener = new StepListAdapter.MyClickListener() {
             @Override
-            public void onStepSelected(ArrayList<Step> steps, Step single_step) {
-                onClickStepListener.onStepSelected(steps, single_step);
+            public void onStepSelected(ArrayList<Step> steps, Step single_step, String videoURL, String description) {
+                onClickStepListener.onStepSelected(steps, single_step, videoURL, description);
             }
         };
 
@@ -76,7 +76,7 @@ public class StepsFragment extends Fragment {
     Interface to be implemented
      */
     public interface OnClickStepListener{
-         void onStepSelected(ArrayList <Step> steps, Step single_step);
+         void onStepSelected(ArrayList <Step> steps, Step single_step, String videoURL, String description);
     }
 
     @Override
