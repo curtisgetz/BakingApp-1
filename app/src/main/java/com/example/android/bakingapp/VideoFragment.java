@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,10 +58,10 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     private long position;
     private boolean state = true;
     private String videoUrl;
-    private String desc;
+    private String vvvv;
 
-    String video_fn;
-    String dis_fn;
+    Long pos_two;
+
 
     Step s;
 
@@ -97,14 +96,14 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                 }
             }
 
-            Long pos = savedInstanceState.getLong(POSITION);
+            pos_two = savedInstanceState.getLong(POSITION);
             boolean state = savedInstanceState.getBoolean(STATE);
 
-            Log.i("TAG", "state and pos: " + state + "   " + pos);
-
-            if ( simpleExoPlayer != null ) {
-                simpleExoPlayer.seekTo(pos);
+            if ( simpleExoPlayer != null  ) {
+                simpleExoPlayer.seekTo(pos_two);
                 simpleExoPlayer.setPlayWhenReady(state);
+            } else {
+                initializePlayer(Uri.parse(videoUrl));
             }
 
         } else {
@@ -140,9 +139,12 @@ public class VideoFragment extends android.support.v4.app.Fragment {
 
 
         if ( next_button != null ) {
+
             next_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    simpleExoPlayer = null;
+                    releasePlayer();
                     if ( pos < stepArrayList.size() - 1 ) {
                         pos++;
                     } else {
@@ -151,6 +153,7 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                     Step step = stepArrayList.get(pos);
                     step_org = step;
                     String video = step.getVideoURL();
+                    vvvv = video;
                     String dis = step.getDescription();
                     description_text_view.setText(dis);
                     if ( video.isEmpty() ) {
@@ -160,9 +163,9 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                         Uri video_uri = Uri.parse(video);
                         simpleExoPlayerView.setVisibility(View.VISIBLE);
                         initializePlayer(video_uri);
-                    }
-                    releasePlayer();
-                    simpleExoPlayer = null;
+                        simpleExoPlayer = null;
+                        releasePlayer();
+                        }
                 }
             });
 
@@ -191,9 +194,8 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                         Uri video_uri = Uri.parse(video);
                         simpleExoPlayerView.setVisibility(View.VISIBLE);
                         initializePlayer(video_uri);
-                    }
-                    simpleExoPlayer = null;
 
+                    }
                 }
             });
         }
@@ -234,14 +236,12 @@ public class VideoFragment extends android.support.v4.app.Fragment {
 
                     // Prepare the MediaSource.
                     String userAgent = Util.getUserAgent(getContext(), "BakingApp");
-                    if ( videoUri != null ) {
-                        MediaSource mediaSource = new ExtractorMediaSource(videoUri, new DefaultDataSourceFactory(
-                                getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
-                        if ( currentPosition != C.TIME_UNSET )
-                            simpleExoPlayer.seekTo(currentPosition);
-                        simpleExoPlayer.prepare(mediaSource);
-                        simpleExoPlayer.setPlayWhenReady(true);
-                    }
+                    MediaSource mediaSource = new ExtractorMediaSource(videoUri, new DefaultDataSourceFactory(
+                            getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
+                    if ( currentPosition != C.TIME_UNSET )
+                    simpleExoPlayer.seekTo(currentPosition);
+                    simpleExoPlayer.prepare(mediaSource);
+                    simpleExoPlayer.setPlayWhenReady(true);
                 }
             }
         }
