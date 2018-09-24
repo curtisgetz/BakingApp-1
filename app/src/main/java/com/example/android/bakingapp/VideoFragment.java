@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +70,12 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     }
 
 
+    @Override
+    public void onAttach(Context context) {
+        Log.i("TAG", "onAttach: is running");
+        super.onAttach(context);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -78,6 +85,9 @@ public class VideoFragment extends android.support.v4.app.Fragment {
         context = getContext();
         stepArrayList = getActivity().getIntent().getExtras().getParcelableArrayList("stepsArrayList");
         step_org = getActivity().getIntent().getExtras().getParcelable("singleStep");
+
+        Log.i("TAG", "onCreate is running");
+
 
         if ( savedInstanceState != null ) {
             if ( savedInstanceState.getParcelable("v_for_two") != null ) {
@@ -99,12 +109,14 @@ public class VideoFragment extends android.support.v4.app.Fragment {
             pos_two = savedInstanceState.getLong(POSITION);
             boolean state = savedInstanceState.getBoolean(STATE);
 
+
             if ( simpleExoPlayer != null  ) {
                 simpleExoPlayer.seekTo(pos_two);
                 simpleExoPlayer.setPlayWhenReady(state);
             } else {
                 initializePlayer(Uri.parse(videoUrl));
             }
+
 
         } else {
             if ( video_url != null ) {
@@ -123,7 +135,6 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                 next_button.setVisibility(View.INVISIBLE);
                 prev_button.setVisibility(View.INVISIBLE);
             }
-
         }
         simpleExoPlayerView.setVisibility(View.VISIBLE);
         if ( step_org != null ) {
@@ -134,22 +145,53 @@ public class VideoFragment extends android.support.v4.app.Fragment {
 
             initializePlayer(Uri.parse(step_org.getVideoURL()));
             description_text_view.setText(step_org.getDescription());
-
         }
 
 
         if ( next_button != null ) {
-
             next_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     simpleExoPlayer = null;
-                    releasePlayer();
+//                    releasePlayer();
                     if ( pos < stepArrayList.size() - 1 ) {
                         pos++;
                     } else {
                         Toast.makeText(getContext(), "You have reached the final step", Toast.LENGTH_SHORT).show();
                     }
+                    Step step = stepArrayList.get(pos);
+                    step_org = step;
+                    String video = step.getVideoURL();
+                    vvvv = video;
+                    String dis = step.getDescription();
+                    description_text_view.setText(dis);
+                    if ( video.isEmpty() ) {
+                        simpleExoPlayerView.setVisibility(View.GONE);
+                        releasePlayer();
+                      //  simpleExoPlayer = null;
+                    } else {
+                        Uri video_uri = Uri.parse(video);
+                        simpleExoPlayerView.setVisibility(View.VISIBLE);
+                        initializePlayer(video_uri);
+                        simpleExoPlayer = null;
+                        releasePlayer(); }
+                }
+            });
+        }
+
+        if ( prev_button != null ) {
+            prev_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    releasePlayer();
+                    if ( pos < stepArrayList.size() - 1 ) {
+                        pos--;
+                    }
+                    if ( pos < 0 ) {
+                        pos = 0;
+                        Toast.makeText(getContext(), "You have reached the first step", Toast.LENGTH_SHORT).show();
+                    }
+
                     Step step = stepArrayList.get(pos);
                     step_org = step;
                     String video = step.getVideoURL();
@@ -165,36 +207,6 @@ public class VideoFragment extends android.support.v4.app.Fragment {
                         initializePlayer(video_uri);
                         simpleExoPlayer = null;
                         releasePlayer();
-                        }
-                }
-            });
-
-        }
-
-        if ( prev_button != null ) {
-            prev_button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    releasePlayer();
-                    if ( pos < stepArrayList.size() - 1 ) {
-                        pos--;
-                    }
-                    if ( pos < 0 ) {
-                        pos = 0;
-                        Toast.makeText(getContext(), "You have reached the first step", Toast.LENGTH_SHORT).show();
-                    }
-                    Step step = stepArrayList.get(pos);
-                    String video = step.getVideoURL();
-                    String dis = step.getDescription();
-                    description_text_view.setText(dis);
-                    if ( video.isEmpty() ) {
-                        simpleExoPlayerView.setVisibility(View.GONE);
-                        releasePlayer();
-                    } else {
-                        Uri video_uri = Uri.parse(video);
-                        simpleExoPlayerView.setVisibility(View.VISIBLE);
-                        initializePlayer(video_uri);
-
                     }
                 }
             });
@@ -215,6 +227,9 @@ public class VideoFragment extends android.support.v4.app.Fragment {
     private int getPos(Step step) {
         return stepArrayList.indexOf(step);
     }
+
+
+
 
     /**
      * Initialize ExoPlayer.
@@ -252,6 +267,7 @@ public class VideoFragment extends android.support.v4.app.Fragment {
         super.onPause();
         if ( simpleExoPlayer != null ) {
             currentPosition = simpleExoPlayer.getCurrentPosition();
+            Log.i("TAG", "onPause: " + currentPosition);
             state = simpleExoPlayer.getPlayWhenReady();
             simpleExoPlayer.stop();
             simpleExoPlayer.release();
@@ -259,19 +275,15 @@ public class VideoFragment extends android.support.v4.app.Fragment {
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if ( simpleExoPlayer != null ) {
-            simpleExoPlayer.stop();
-            simpleExoPlayer.release();
-        }
-    }
-
 
     @Override
     public void onDestroyView() {
-        releasePlayer();
+        Log.i("TAG", "onDestroyView is running ");
+        if (simpleExoPlayer != null) {
+            currentPosition = simpleExoPlayer.getCurrentPosition();
+            releasePlayer();
+//            simpleExoPlayer = null;
+        }
         super.onDestroyView();
     }
 
@@ -287,6 +299,28 @@ public class VideoFragment extends android.support.v4.app.Fragment {
 
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        if (simpleExoPlayer != null) {
+            currentPosition = simpleExoPlayer.getCurrentPosition();
+            simpleExoPlayer.stop();
+            simpleExoPlayer.release();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (simpleExoPlayer != null) {
+            currentPosition = simpleExoPlayer.getCurrentPosition();
+            simpleExoPlayer.stop();
+            simpleExoPlayer.release();
+        }
+    }
+
+
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle currentState) {
         if ( step_org != null ) {
             currentState.putParcelable(STEP, step_org);
@@ -294,14 +328,20 @@ public class VideoFragment extends android.support.v4.app.Fragment {
         if ( step_org != null && !step_org.getVideoURL().isEmpty() ) {
             currentState.putString(VIDEO, videoUrl);
             currentState.putLong(POSITION, currentPosition);
+
+            if((simpleExoPlayer != null) && (currentPosition < 0)) {
+                currentPosition = simpleExoPlayer.getCurrentPosition();
+                currentState.putLong(POSITION, currentPosition);
+                Log.i("TAG", "item saved: " + currentPosition);
+            }
+
+            Log.i("TAG", "onSaveInstanceState: " + currentPosition);
             currentState.putBoolean(STATE, state);
         }
         if ( video_url != null ) {
             currentState.putString("v_for_two", video_url);
         }
         super.onSaveInstanceState(currentState);
-
-
     }
 
 }
